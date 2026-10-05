@@ -64,6 +64,11 @@ h1 em{display:block;font-size:.55em;letter-spacing:.1em;margin-top:.2em;font-sty
 .ledger div{display:flex;justify-content:space-between;gap:12px;padding:10px 16px;border-bottom:1px dashed var(--line)}.ledger div:last-child{border:0}
 .ledger b{font-weight:500;color:var(--acc)}.ledger .s{color:var(--mut)}
 .realms{margin-top:36px}.realms ul{padding-left:1.2em;color:var(--mut)}.realms a{color:var(--acc)}
+.hero{isolation:isolate;background:#04060b url(banner.svg) center/cover no-repeat;color:#f1e7cf;padding:84px clamp(20px,5vw,56px) 96px;margin-bottom:40px;border:1px solid var(--line);min-height:540px}
+.hero::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(4,6,11,.35),transparent 60%)}
+@media(max-width:700px){.hero{background-position:74% center}.hero::before{background:rgba(4,6,11,.5)}.hero{padding-block:56px 64px}}
+.hero .eb{color:#f2b36b}.hero h1 em{color:#f2b36b}.hero p{color:#f1e7cf}.hero .chip{color:#f2b36b;border-color:#f2b36b}
+.hero .btn{background:#e8883a;border-color:#e8883a;color:#0f1214}.hero .btn.o{background:none;color:#f2b36b;border-color:#f2b36b}
 .soon{border:1px solid var(--acc);padding:18px 22px;max-width:62ch}.soon p{margin:6px 0 0;color:var(--mut)}
 .hush{text-align:center}.hush p{margin-inline:auto;max-width:48ch;font-style:italic;font-size:1.25rem}
 footer{padding-block:48px;border-top:1px solid var(--line);color:var(--mut);font:400 .78rem var(--mono);text-align:center}
