@@ -14,7 +14,7 @@
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1214;--bg2:#161a1d;--fg:#ece3d0;--mut:#9a9080;--line:#2e3436;--acc:#e8883a;--acc2:#f2b36b;--card:#14181b;--sea:#101a1e;--seaink:#5f7a80;--ink:#ece3d0;color-scheme:dark}}
 :root[data-theme="dark"]{--bg:#0f1214;--bg2:#161a1d;--fg:#ece3d0;--mut:#9a9080;--line:#2e3436;--acc:#e8883a;--acc2:#f2b36b;--card:#14181b;--sea:#101a1e;--seaink:#5f7a80;--ink:#ece3d0;color-scheme:dark}
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--fg);font:18px/1.65 var(--body);padding-inline:20px;margin:0}
+html{overflow-x:clip}body{overflow-x:clip;background:var(--bg);color:var(--fg);font:18px/1.65 var(--body);padding-inline:20px;margin:0}
 .w{max-width:1080px;margin-inline:auto}
 section{padding-block:72px;border-top:1px solid var(--line)}
 h1,h2,h3{font-family:var(--display);font-weight:700;text-wrap:balance;margin:0}
@@ -64,7 +64,7 @@ h1 em{display:block;font-size:.55em;letter-spacing:.1em;margin-top:.2em;font-sty
 .ledger div{display:flex;justify-content:space-between;gap:12px;padding:10px 16px;border-bottom:1px dashed var(--line)}.ledger div:last-child{border:0}
 .ledger b{font-weight:500;color:var(--acc)}.ledger .s{color:var(--mut)}
 .realms{margin-top:36px}.realms ul{padding-left:1.2em;color:var(--mut)}.realms a{color:var(--acc)}
-.hero{isolation:isolate;background:#04060b url(banner.svg) center/cover no-repeat;color:#f1e7cf;padding:84px clamp(20px,5vw,56px) 96px;margin-bottom:40px;border:1px solid var(--line);min-height:540px}
+.hero{isolation:isolate;background:#04060b url(banner.svg) center/cover no-repeat;color:#f1e7cf;width:100vw;margin-left:calc(50% - 50vw);padding:84px max(20px,calc(50vw - 540px)) 96px;margin-bottom:40px;border:0;min-height:560px}
 .hero::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(4,6,11,.35),transparent 60%)}
 @media(max-width:700px){.hero{background-position:74% center}.hero::before{background:rgba(4,6,11,.5)}.hero{padding-block:56px 64px}}
 .hero .eb{color:#f2b36b}.hero h1 em{color:#f2b36b}.hero p{color:#f1e7cf}.hero .chip{color:#f2b36b;border-color:#f2b36b}
