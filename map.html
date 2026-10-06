@@ -296,6 +296,29 @@ const hall=P.hall;const HX=hall.x-OX,HZ=hall.y-OY,HY=hall.gy;
  add(new T.ConeGeometry(.35,3,6),gm,0,13.5,0)}
 const BH=170;
 const beam=new T.Mesh(new T.CylinderGeometry(1.6,5.5,BH,20,1,true),new T.MeshBasicMaterial({color:0xffe6a0,transparent:true,opacity:.2,depthWrite:false,side:T.DoubleSide,fog:false}));beam.position.set(HX,HY+BH/2,HZ);world.add(beam);
+// ---- Hollow Roads landmark models
+{const gy=(x,y)=>Math.max(hAt(x,y),.3),M=c=>new T.MeshLambertMaterial({color:c}),G=new T.Group();world.add(G);G.userData.hr=1;
+ const add=m=>{G.add(m);return m},bx=(x,y,w,h,d,c,rot=0,dy=0)=>{const m=add(new T.Mesh(new T.BoxGeometry(w,h,d),M(c)));m.position.set(x-OX,gy(x,y)+h/2+dy,y-OY);m.rotation.y=rot;return m},
+ cy=(x,y,r0,r1,h,c,dy=0,seg=12)=>{const m=add(new T.Mesh(new T.CylinderGeometry(r0,r1,h,seg),M(c)));m.position.set(x-OX,gy(x,y)+h/2+dy,y-OY);return m},
+ cn=(x,y,r,h,c,dy,seg=4,rot=Math.PI/4)=>{const m=add(new T.Mesh(new T.ConeGeometry(r,h,seg),M(c)));m.rotation.y=rot;m.position.set(x-OX,gy(x,y)+dy+h/2,y-OY);return m},
+ lit=(x,y,h,c=0xffd98a,s=14)=>{const m=add(new T.Mesh(new T.SphereGeometry(.55,8,6),new T.MeshBasicMaterial({color:c})));m.position.set(x-OX,gy(x,y)+h,y-OY);sprite(x-OX,y-OY,gy(x,y)+h,s,c,1.2)};
+ const L=P.lamp;bx(L.x,L.y,3.6,1.1,3.6,0xb9b1a0);cy(L.x,L.y,.3,.45,10,0x2c2a2e,1);bx(L.x,L.y,1.9,2.4,1.9,0xffe3a0,0,11);cn(L.x,L.y,1.7,2.2,0xc9402a,13.4);
+ for(const[dx,dy]of[[-1,-1],[1,-1],[-1,1],[1,1]])cy(L.x+dx*7.6,L.y+dy*7.6,.14,.14,3.2,0x4a3a28),lit(L.x+dx*7.6,L.y+dy*7.6,3.6,0xffd98a,7);
+ {const W=P.wells;for(const[dx,dy]of[[-3.4,-3.4],[3.4,-3.4],[-3.4,3.4],[3.4,3.4]]){cy(W.x+dx,W.y+dy,1.15,1.3,1,0xa9a39a);cy(W.x+dx,W.y+dy,.85,.85,.1,0x3f6f93,1);cy(W.x+dx-.9,W.y+dy,.08,.08,2.6,0x4a3a28);cy(W.x+dx+.9,W.y+dy,.08,.08,2.6,0x4a3a28);bx(W.x+dx,W.y+dy,2.2,.12,.5,0x4a3a28,0,2.6)}}
+ {const H=P.lwhall;cy(H.x,H.y,4.4,4.8,3.4,0x4a4256,0,14);cn(H.x,H.y,5.2,3.2,0x6b5f73,3.4,14,0);bx(H.x+4.5,H.y,1.2,2.2,1.6,0x2c2a2e);cy(H.x,H.y,.35,.35,2,0x4a3a28,6.4);lit(H.x,H.y,8.6,0xffe3a0,12)}
+ {const S=P.stone;const r=add(new T.Mesh(new T.IcosahedronGeometry(2.1,0),M(0x8f8a98)));r.scale.set(1.5,.7,1);r.position.set(S.x-OX,gy(S.x,S.y)+.9,S.y-OY);
+  [[-3.2,1.4,0xc9402a],[3.1,.8,0x4f7aa8],[-1.8,3.2,0xd8b87a],[2.4,2.8,0x7a9a52],[-3.8,-1,0x8a5a3a],[1.2,-3,0xe8e0cc]].forEach(([dx,dy,c],i)=>bx(S.x+dx,S.y+dy,.7+i%3*.3,.5+i%2*.4,.7,c,i))}
+ {const F=P.fogbell;for(const dx of[-1.6,1.6])bx(F.x+dx,F.y,.4,5.4,.4,0x5a3c24);bx(F.x,F.y,3.8,.4,.5,0x5a3c24,0,5);const b=add(new T.Mesh(new T.ConeGeometry(1.1,1.8,10),M(0xc29a3c)));b.position.set(F.x-OX,gy(F.x,F.y)+3.9,F.y-OY);cn(F.x,F.y,2.6,1.4,0x6b4a2a,5.4)}
+ {const T_=P.toll;bx(T_.x,T_.y,5.4,3.2,4,0xcdb98a);cn(T_.x,T_.y,4.4,2.4,0x8a5a3a,3.2,4,Math.PI/4).scale.z=.8;bx(T_.x-4,T_.y+2,.3,2.6,.3,0x4a3a28);bx(T_.x-4,T_.y+2,2.2,1.2,.2,0xe8dcc0,0,1.6);lit(T_.x+3,T_.y+2.2,3,0xffd98a,6)}
+ {const O=P.press;bx(O.x,O.y,6,3.2,4.4,0xc8a26a);cn(O.x,O.y,5,2.6,0x8a5a3a,3.2).scale.z=.8;const w=add(new T.Mesh(new T.TorusGeometry(1.7,.25,6,16),M(0x6b4a2a)));w.position.set(O.x-OX-3.6,gy(O.x,O.y)+2,O.y-OY);w.rotation.y=Math.PI/2;
+  bx(O.x-6,O.y+4.4,14,.14,.3,0x6a5a43,0,.5);for(let k=0;k<5;k++)bx(O.x-12+k*3.2,O.y+4.4,.16,1,.16,0x4a3a28)}
+ {const C=P.cistern;for(let k=0;k<3;k++){cy(C.x+(k-1)*4.2,C.y,1.9,2,3.6,0x8fa3ad);cy(C.x+(k-1)*4.2,C.y,2,2,.25,0x4a5560,3.6)}bx(C.x,C.y+2.6,9,.3,.4,0x6a5a43,0,.8)}
+ {const K=P.chapel;bx(K.x,K.y,3.4,3,4.6,0xe8e0cc);cn(K.x,K.y,3,2.8,0x6b5f73,3,4,Math.PI/4).scale.z=1.2;bx(K.x,K.y-3,1.6,5,1.6,0xd8cfb8);cn(K.x,K.y-3,1.5,1.8,0x6b5f73,5);lit(K.x+.6,K.y+2.4,1.8,0xffe3a0,7)}
+ {const T0=P.threshold,x=T0.x,y=T0.y+7;for(const dx of[-4.2,4.2])bx(x+dx,y,1.5,7,1.5,0xc9bfa0);bx(x,y,10.2,1.4,1.7,0xc9bfa0,0,7);cn(x,y,1.5,1.4,0x6b5f73,8.4,4);lit(x,y,5.8,0xffe3a0,9)}
+ {const Q=P.quay;bx(Q.x+5.5,Q.y,12,.45,3.2,0xb79a68,0,.15);for(let k=0;k<5;k++){const px=Q.x+k*2.6;cy(px,Q.y-1.9,.16,.16,2.4,0x4a3a28);cy(px,Q.y+1.9,.16,.16,2.4,0x4a3a28);if(k%2==0)lit(px,Q.y-1.9,2.6,0xffb347,6)}}
+ {const Lo=P.lowlamp;for(let k=0;k<4;k++){const sx=Lo.x+(k-1.5)*3.6,sy=Lo.y-7;bx(sx,sy,2.6,1.1,1.8,0xd8b87a);cn(sx,sy,2.4,1.1,[0xc9402a,0xe8dcc0][k%2],1.1,4).scale.z=.8}cy(Lo.x+5.5,Lo.y-2,.8,.8,1.1,0x6b6a5e);cy(Lo.x-5.5,Lo.y-2,.8,.8,1.1,0x6b6a5e)}
+ {const F=P.farewell;cy(F.x,F.y,.28,.4,8,0x2c2a2e,0);lit(F.x,F.y,8.6,0xffd98a,12);for(let k=0;k<5;k++)bx(F.x-3.2+k*1.5,F.y+4.2,1.2,.6+k%2*.3,1.2,0x9a9484,k)}
+ G.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true}})}
 const hallLight=new T.PointLight(0xffd27a,.0,160);hallLight.position.set(HX,HY+12,HZ);world.add(hallLight);sprite(HX,HZ,HY+10,44,0xffd27a,1.6);
 // ---- mystic Sunstair
 const gMys=new T.Group();world.add(gMys);
