@@ -2,6 +2,8 @@
 (function () {
   try { if (localStorage.getItem("oth_owner")) return; } catch (e) {}
   if (navigator.doNotTrack === "1" || navigator.globalPrivacyControl) return;
+  // Skip automation: WebDriver-controlled browsers, and clients with no language or a zero-size screen.
+  if (navigator.webdriver || !navigator.language || !screen.width || !screen.height) return;
   function send(t, v) {
     var d = { t: t, p: location.pathname };
     if (v) d.v = v;

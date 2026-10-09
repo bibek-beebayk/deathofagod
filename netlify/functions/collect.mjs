@@ -1,7 +1,15 @@
 import { getStore } from "@netlify/blobs";
 import { dayKey, sha } from "../lib/analytics.mjs";
 
-const BOT = /bot|crawl|spider|slurp|facebookexternalhit|preview|headless|lighthouse|pingdom|uptime|monitor|curl|wget|python|axios|node-fetch|go-http|java\/|httpclient/i;
+// Known crawlers, link-preview fetchers, SEO tools, uptime monitors, scanners and HTTP libraries.
+const BOT = new RegExp([
+  "bot", "crawl", "spider", "slurp", "scrap", "fetch", "preview", "headless", "phantom", "puppeteer", "playwright", "selenium", "webdriver",
+  "lighthouse", "pagespeed", "gtmetrix", "pingdom", "uptime", "monitor", "check", "probe", "scan", "validator", "audit", "inspect",
+  "google", "gsa-", "adsbot", "mediapartners", "bing", "msn", "yahoo", "duckduck", "baidu", "yandex", "sogou", "seznam", "naver", "petal", "applebot",
+  "facebookexternalhit", "meta-external", "whatsapp", "telegram", "skype", "slack", "discord", "linkedin", "pinterest", "twitter", "embedly", "quora", "reddit",
+  "ahrefs", "semrush", "mj12", "dotbot", "rogerbot", "screaming", "sitebulb", "moz\\.com", "serpstat", "dataforseo", "bytespider", "gptbot", "claude", "anthropic", "perplexity", "ccbot", "amazonbot", "diffbot",
+  "curl", "wget", "python", "aiohttp", "requests", "axios", "node-fetch", "undici", "go-http", "java/", "okhttp", "httpclient", "libwww", "perl", "ruby", "php", "scrapy", "postman", "insomnia"
+].join("|"), "i");
 const TYPES = new Set(["pv", "share", "char", "scroll", "about"]);
 const PATH = /^\/[A-Za-z0-9\-_./]{0,79}$/;
 const TOKEN = /^[a-z0-9_:.\-]{1,40}$/;
@@ -10,7 +18,10 @@ const HOST = /^[a-z0-9.\-]{1,60}$/;
 export async function collect(req, ctx, store, now = Date.now()) {
   if (req.method !== "POST") return new Response(null, { status: 405 });
   const ua = req.headers.get("user-agent") || "";
-  if (!ua || BOT.test(ua)) return new Response(null, { status: 204 });
+  // Real browsers always send a user agent and a language; scripts and many crawlers do not.
+  if (!ua || ua.length < 20 || BOT.test(ua) || !req.headers.get("accept-language")) return new Response(null, { status: 204 });
+  const sfs = req.headers.get("sec-fetch-site");
+  if (sfs && sfs !== "same-origin") return new Response(null, { status: 204 });
   // Same-origin only: the beacon always sends Origin; reject other sites.
   const origin = req.headers.get("origin");
   const host = new URL(req.url).host;
