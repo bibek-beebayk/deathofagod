@@ -1,0 +1,6 @@
+.share{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;margin:2.2em auto 0;padding:0}
+.share .share-l{flex:0 0 100%;text-align:center;font:500 .72rem 'IBM Plex Mono',ui-monospace,monospace;letter-spacing:.3em;text-transform:uppercase;color:var(--gold,var(--acc));margin-bottom:6px}
+.share a,.share button{font:500 .74rem 'IBM Plex Mono',ui-monospace,monospace;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:var(--mut,var(--muted,#888));background:none;border:1px solid var(--line);padding:9px 14px;border-radius:2px;cursor:pointer;line-height:1}
+.share a:hover,.share button:hover,.share a:focus-visible,.share button:focus-visible{color:var(--gold,var(--acc));border-color:var(--gold,var(--acc));outline:none}
+.share [hidden]{display:none}
+.share .ok{color:var(--gold,var(--acc));border-color:var(--gold,var(--acc))}
