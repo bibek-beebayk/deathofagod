@@ -70,6 +70,18 @@ footer{padding-block:44px;color:var(--mut);font:400 .74rem var(--mono);text-alig
 :root[data-theme="light"] #embers{opacity:.25}
 #fs,#fs *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 #fs img{-webkit-user-drag:none;user-drag:none;pointer-events:none}
+#fs{touch-action:manipulation}
+.dict{position:absolute;z-index:60;width:min(340px,calc(100vw - 24px));background:var(--card);color:var(--fg);border:1px solid var(--gold);border-radius:6px;padding:.8rem 1rem .9rem;box-shadow:0 12px 40px rgba(0,0,0,.45),0 0 0 1px var(--line);font:400 .95rem/1.5 var(--body,Georgia,serif);-webkit-user-select:text;user-select:text}
+.dict .dh{display:flex;align-items:baseline;gap:.6rem;padding-right:1.6rem;margin-bottom:.35rem}
+.dict .dw{font-family:var(--display);letter-spacing:.06em;color:var(--gold);font-size:1.05rem;text-transform:capitalize}
+.dict .dp{color:var(--mut);font-size:.85rem}
+.dict .dx{position:absolute;top:.35rem;right:.5rem;background:none;border:0;color:var(--mut);font-size:1.4rem;line-height:1;cursor:pointer;padding:.2rem .4rem}
+.dict .dx:hover{color:var(--acc)}
+.dict .dpos{color:var(--acc);font-size:.8rem;letter-spacing:.08em;text-transform:uppercase}
+.dict ol{margin:.2rem 0 .5rem;padding-left:1.2rem}.dict li{margin:.15rem 0}
+.dict .dm{margin:.2rem 0 0;color:var(--mut);font-style:italic}
+.tip{text-align:center;color:var(--mut);font-size:.82rem;letter-spacing:.04em;margin:0 0 1.4rem}
+@media print{.dict{display:none}}
 @media print{#fs{display:none!important}body::before{content:"Printing is disabled. Read at deathofagod.com";display:block;padding:2em;font:16px serif}}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}#embers{display:none}}
 </style>
