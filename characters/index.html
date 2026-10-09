@@ -104,7 +104,7 @@ html.mo{overflow:hidden}
 @media(max-width:680px){.cd .in{grid-template-columns:minmax(0,1fr)}.cd .im img{aspect-ratio:4/3;object-position:top}.cd .tx{padding:22px 20px}.cd dl{grid-template-columns:minmax(0,1fr);gap:2px}.cd dd{margin-bottom:8px}}
 .lead{text-align:center;color:var(--mut);max-width:52ch;margin:0 auto;font-style:italic}
 </style>
-<link rel="stylesheet" href="/share.css">
+<link rel="stylesheet" href="/share.css?v=2">
 </head>
 <body>
 <canvas id="embers"></canvas><div id="prog"></div>
@@ -124,7 +124,7 @@ var n=Math.round(Math.min(46,innerWidth/26));for(var i=0;i<n;i++)P.push({x:Math.
 (function f(){c.clearRect(0,0,W,H);for(var i=0;i<P.length;i++){var p=P[i];p.y-=p.v;p.d+=.01;p.x+=Math.sin(p.d)*.35;if(p.y<-6){p.y=H+6;p.x=Math.random()*W}c.beginPath();c.fillStyle='rgba(240,150,60,'+p.a*(.4+.6*(p.y/H))+')';c.shadowColor='rgba(240,140,50,.9)';c.shadowBlur=8;c.arc(p.x,p.y,p.r,0,6.283);c.fill()}requestAnimationFrame(f)})()}
 var fs=document.getElementById('fs');if(fs){var sz=20;try{sz=+localStorage.getItem('othfs')||20}catch(e){}function ap(){r.style.setProperty('--fs',sz+'px');try{localStorage.setItem('othfs',sz)}catch(e){}}ap();
 document.getElementById('fm').onclick=function(){sz=Math.max(16,sz-2);ap()};document.getElementById('fp').onclick=function(){sz=Math.min(28,sz+2);ap()}}})();</script>
-<script src="/share.js" defer></script>
+<script src="/share.js?v=2" defer></script>
 <script src="/a.js" defer></script>
 <script src="/characters/characters.js?v=1" defer></script>
 </body>
