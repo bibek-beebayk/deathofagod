@@ -4,4 +4,5 @@
 <url><loc>https://deathofagod.com/map.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
 <url><loc>https://deathofagod.com/read/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
 <url><loc>https://deathofagod.com/read/prologue.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://deathofagod.com/characters/</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
 </urlset>
