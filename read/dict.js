@@ -33,7 +33,7 @@ function show(hit,data){
     data.meanings.forEach(function(m){
       var s=el('div','ds');if(m.pos)s.appendChild(el('em','dpos',m.pos));
       var ol=el('ol');m.defs.forEach(function(d){ol.appendChild(el('li',null,d))});s.appendChild(ol);pop.appendChild(s)});
-  }else pop.appendChild(el('p','dm',data.error==='unavailable'?'The dictionary is unavailable right now.':'No definition found. It may be a name or a word of this world.'));
+  }else pop.appendChild(el('p','dm',data.error==='unavailable'?'The dictionary is unavailable right now.'+(data.why?' ('+data.why+')':''):'No definition found. It may be a name or a word of this world.'));
   document.body.appendChild(pop);
   place(hit.rect);sy=window.scrollY;
 }
@@ -46,8 +46,8 @@ function place(r){
 function lookup(w){
   var k=w.toLowerCase();
   if(cache[k])return Promise.resolve(cache[k]);
-  return fetch('/api/define?w='+encodeURIComponent(k)).then(function(r){return r.json().catch(function(){return{found:false,error:'unavailable'}})})
-    .then(function(d){if(d.error!=='unavailable')cache[k]=d;return d}).catch(function(){return{found:false,error:'unavailable'}});
+  return fetch('/api/define?w='+encodeURIComponent(k)).then(function(r){return r.json().catch(function(){return{found:false,error:'unavailable',why:'http_'+r.status}})})
+    .then(function(d){if(d.error!=='unavailable')cache[k]=d;return d}).catch(function(){return{found:false,error:'unavailable',why:'network'}});
 }
 fs.addEventListener('dblclick',function(e){
   if(e.target.closest&&e.target.closest('a,button'))return;

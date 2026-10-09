@@ -25,7 +25,20 @@ export function candidates(w) {
   return out.slice(0, 5);
 }
 
-function shape(data, asked) {
+const UA = "deathofagod.com dictionary (https://deathofagod.com; contact via site)";
+const strip = (h) => String(h || "").replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#0?39;/g, "'").replace(/\s+/g, " ").trim();
+
+// Wiktionary REST: { en: [{ partOfSpeech, definitions: [{ definition: "<html>" }] }] }
+function shapeWikt(data, asked, word) {
+  const entries = (data && data.en) || [];
+  const meanings = entries.slice(0, 3).map((m) => ({
+    pos: String(m.partOfSpeech || "").slice(0, 24),
+    defs: (m.definitions || []).map((d) => strip(d.definition).slice(0, 300)).filter(Boolean).slice(0, 2),
+  })).filter((m) => m.defs.length);
+  return meanings.length ? { found: true, word, asked, phonetic: "", meanings } : null;
+}
+
+function shapeDict(data, asked) {
   const e = Array.isArray(data) ? data[0] : null;
   if (!e) return null;
   const meanings = (e.meanings || []).slice(0, 3).map((m) => ({
@@ -37,24 +50,47 @@ function shape(data, asked) {
   return { found: true, word: String(e.word || asked).slice(0, 40), asked, phonetic: String(ph).slice(0, 40), meanings };
 }
 
+// Returns {result}, {missing:true} (404) or {failed:reason}
+async function fromWikt(c, asked, fetchFn) {
+  try {
+    const r = await fetchFn("https://en.wiktionary.org/api/rest_v1/page/definition/" + encodeURIComponent(c), { headers: { "user-agent": UA, accept: "application/json" }, signal: AbortSignal.timeout(2500) });
+    if (r.status === 404) return { missing: true };
+    if (!r.ok) return { failed: "wikt_" + r.status };
+    const res = shapeWikt(await r.json(), asked, c);
+    return res ? { result: res } : { missing: true };
+  } catch (e) { return { failed: "wikt_" + (e && e.name || "error") }; }
+}
+async function fromDictApi(c, asked, fetchFn) {
+  try {
+    const r = await fetchFn("https://api.dictionaryapi.dev/api/v2/entries/en/" + encodeURIComponent(c), { signal: AbortSignal.timeout(2500) });
+    if (r.status === 404) return { missing: true };
+    if (!r.ok) return { failed: "dict_" + r.status };
+    const res = shapeDict(await r.json(), asked);
+    return res ? { result: res } : { missing: true };
+  } catch (e) { return { failed: "dict_" + (e && e.name || "error") }; }
+}
+
 export async function define(req, store, fetchFn = fetch) {
-  const w = (new URL(req.url).searchParams.get("w") || "").trim().toLowerCase().replace(/’/g, "'");
+  const w = (new URL(req.url).searchParams.get("w") || "").trim().toLowerCase().replace(/\u2019/g, "'");
   if (!WORD.test(w)) return J({ found: false, error: "bad_word" }, 400);
   const key = "w/" + w;
-  try { const hit = await store.get(key, { type: "json" }); if (hit) return J(hit); } catch {}
-  let result = null, upstreamFailed = false;
+  try {
+    const hit = await Promise.race([store.get(key, { type: "json" }), new Promise((_, rej) => setTimeout(() => rej(new Error("t")), 1500))]);
+    if (hit) return J(hit);
+  } catch {}
+  const deadline = Date.now() + 7000;
+  let result = null, failures = [], anySuccess = false;
   for (const c of candidates(w)) {
-    try {
-      const r = await fetchFn("https://api.dictionaryapi.dev/api/v2/entries/en/" + encodeURIComponent(c), { signal: AbortSignal.timeout(4000) });
-      if (r.status === 404) continue;
-      if (!r.ok) { upstreamFailed = true; break; }
-      result = shape(await r.json(), w);
-      if (result) break;
-    } catch { upstreamFailed = true; break; }
+    if (Date.now() > deadline) break;
+    let r = await fromWikt(c, w, fetchFn);
+    if (r.failed) { failures.push(r.failed); if (Date.now() < deadline) r = await fromDictApi(c, w, fetchFn); if (r.failed) failures.push(r.failed); }
+    if (r.result) { result = r.result; break; }
+    if (r.missing) anySuccess = true;
+    if (r.failed && !anySuccess) break; // both sources down: stop early
   }
-  if (upstreamFailed && !result) return J({ found: false, error: "unavailable" }, 502);
+  if (!result && !anySuccess) return J({ found: false, error: "unavailable", why: failures.join(",") }, 502);
   const out = result || { found: false, asked: w };
-  try { await store.setJSON(key, out); } catch {}
+  try { await Promise.race([store.setJSON(key, out), new Promise((_, rej) => setTimeout(() => rej(new Error("t")), 1500))]); } catch {}
   return J(out);
 }
 
