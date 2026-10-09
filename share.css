@@ -4,3 +4,10 @@
 .share a:hover,.share button:hover,.share a:focus-visible,.share button:focus-visible{color:var(--gold,var(--acc));border-color:var(--gold,var(--acc));outline:none}
 .share [hidden]{display:none}
 .share .ok{color:var(--gold,var(--acc));border-color:var(--gold,var(--acc))}
+
+.totop{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:50;width:46px;height:46px;display:flex;align-items:center;justify-content:center;padding:0;border-radius:50%;border:1px solid var(--gold,var(--acc));background:var(--card,#12161a);color:var(--gold,var(--acc));box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer;opacity:0;visibility:hidden;transform:translateY(10px);transition:opacity .25s,transform .25s,visibility .25s,background .2s,color .2s}
+.totop.show{opacity:1;visibility:visible;transform:none}
+.totop:hover,.totop:focus-visible{background:var(--acc);color:var(--bg,#0b0d10);border-color:var(--acc)}
+.totop svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+@media (prefers-reduced-motion:reduce){.totop{transition:none}}
+@media print{.totop{display:none}}
