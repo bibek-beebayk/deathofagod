@@ -83,9 +83,24 @@ h1 em{display:block;font-size:.55em;letter-spacing:.1em;margin-top:.2em;font-sty
 .soon{border:1px solid var(--acc);padding:18px 22px;max-width:62ch}.soon p{margin:6px 0 0;color:var(--mut)}
 .hush{text-align:center}.hush p{margin-inline:auto;max-width:48ch;font-style:italic;font-size:1.25rem}
 footer{padding-block:48px;border-top:1px solid var(--line);color:var(--mut);font:400 .78rem var(--mono);text-align:center}
+
+#ages ol{list-style:none;margin:0;padding:0 0 0 28px;position:relative;display:grid;gap:18px;max-width:760px}
+#ages ol::before{content:"";position:absolute;left:7px;top:8px;bottom:8px;width:2px;background:linear-gradient(var(--line),var(--acc))}
+#ages li{position:relative;padding:20px 22px;border:1px solid var(--line);background:var(--card);border-left:3px solid var(--c,var(--acc));min-width:0}
+#ages li::before{content:"";position:absolute;left:-28px;top:26px;width:12px;height:12px;border-radius:50%;background:var(--bg);border:2px solid var(--acc)}
+#ages li.now{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc)}
+#ages li.now::before{background:var(--acc);box-shadow:0 0 0 5px rgba(232,136,58,.22)}
+#ages li.next{border-style:dashed;background:transparent}
+#ages li.next::before{border-style:dashed}
+#ages .ah{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;margin-bottom:6px}
+#ages h3{font-size:1.15rem}
+#ages .len{font:500 .72rem var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--acc)}
+#ages p{margin:0;max-width:62ch}
+#ages .here{display:inline-block;margin-top:10px;font:500 .72rem var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--acc2)}
+#ages .note{margin:22px 0 0;color:var(--mut);font-style:italic;max-width:62ch}
 </style>
 <div class="w">
-<nav aria-label="Main"><span><a href="#story">Story</a><a href="/read/">Read</a><a href="/characters/">Characters</a><a href="#map-s">Map</a><a href="#gods">Gods</a><a href="#peoples">Peoples</a></span><button id="th" type="button">Theme</button></nav>
+<nav aria-label="Main"><span><a href="#story">Story</a><a href="/read/">Read</a><a href="/characters/">Characters</a><a href="#map-s">Map</a><a href="#gods">Gods</a><a href="#peoples">Peoples</a><a href="#ages">Ages</a></span><button id="th" type="button">Theme</button></nav>
 <main><header class="hero"><canvas id="embers"></canvas>
 <div class="eb">An epic fantasy · a new chapter every week</div>
 <h1>Oathlands<em>The Death of a God</em></h1>
@@ -129,6 +144,17 @@ footer{padding-block:48px;border-top:1px solid var(--line);color:var(--mut);font
 <div class="card"><h3>Tidebound</h3><p>Sea-folk whose bodies and lives follow the tides, and who carry a real grievance.</p></div>
 <div class="card"><h3>Ledgerkeepers</h3><p>Stone-skinned and patient, they remember every oath ever sworn.</p></div>
 </div></section>
+
+<section id="ages"><div class="eb">The ages</div><h2>Five ages of the world</h2>
+<p class="lede">The Oathlands count their history in ages, and the ages are not equal. One of them is longer than all the others put together, many times over.</p>
+<ol>
+<li><div class="ah"><h3>The Age of Chaos</h3><span class="len">About 400 years</span></div><p>Before the gods ruled, nothing held still. Seasons, oaths, and the line between the living and the dead shifted without warning. Wars between the lesser gods and the first mortals ended whole peoples, and no peace lasted long enough to be named.</p></li>
+<li><div class="ah"><h3>The Settling</h3><span class="len">About 20 years</span></div><p>In a few desperate years the wars ended and the world was made to hold steady. What was promised to bring that about, and by whom, the old songs no longer say.</p></li>
+<li><div class="ah"><h3>The Long Peace</h3><span class="len">About 6,000 years</span></div><p>Ilmarion the Just ruled, and the world prospered. Four gods rose to their own domains, kingdoms grew up around each of them, and the old strangeness faded into stories. The peace was so long that most people stopped believing there had ever been anything else.</p></li>
+<li class="now"><div class="ah"><h3>The Dying Age</h3><span class="len">About 35 years</span></div><p>Ilmarion begins to die. His power leaks into the world and the laws he held steady start to slip: seasons misfire, wells turn bitter, and a sworn oath weighs no more than a breath. The four claimants begin their war, and small, warm things called Emberkin appear near the hearths. A smith named Teiran was born as it began, so he has never known a steady world.</p><span class="here">The story takes place in its final years</span></li>
+<li class="next"><div class="ah"><h3>What comes after</h3><span class="len">Not yet told</span></div><p>No one in the Oathlands can say what the next age will be, and neither can we. That is what the story is for.</p></li>
+</ol>
+<p class="note">The Long Peace lasted about fourteen times as long as the Age of Chaos and the Settling put together.</p></section>
 
 <section class="hush"><div class="eb">A new chapter every week</div><h2>The Oathlands</h2><p>Something is wrong with the quiet. The old folk say it is only the weather.</p><a class="btn" href="map.html" style="margin-top:18px">Walk the world in 3D</a></section>
 
