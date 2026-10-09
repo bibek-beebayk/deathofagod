@@ -68,6 +68,9 @@ article p.first::first-line{font-variant:small-caps;letter-spacing:.07em}
 footer{padding-block:44px;color:var(--mut);font:400 .74rem var(--mono);text-align:center;line-height:1.8;letter-spacing:.06em}
 @media (prefers-color-scheme:light){:root:not([data-theme="dark"]) #embers{opacity:.25}}
 :root[data-theme="light"] #embers{opacity:.25}
+#fs,#fs *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+#fs img{-webkit-user-drag:none;user-drag:none;pointer-events:none}
+@media print{#fs{display:none!important}body::before{content:"Printing is disabled. Read at deathofagod.com";display:block;padding:2em;font:16px serif}}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}#embers{display:none}}
 </style>
 <link rel="stylesheet" href="/share.css">
