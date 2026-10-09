@@ -56,6 +56,27 @@ fs.addEventListener('dblclick',function(e){
   var id=++seq;show(hit,cache[hit.word.toLowerCase()]||null);
   lookup(hit.word).then(function(d){if(id===seq)show(hit,d)});
 });
+var lp=null,lx=0,ly=0,fired=false;
+function lpCancel(){if(lp){clearTimeout(lp);lp=null}}
+fs.addEventListener('touchstart',function(e){
+  fired=false;lpCancel();
+  if(e.touches.length!==1)return;
+  var t=e.touches[0];lx=t.clientX;ly=t.clientY;
+  lp=setTimeout(function(){
+    lp=null;
+    var hit=wordAt(lx,ly);if(!hit)return;
+    fired=true;if(navigator.vibrate){try{navigator.vibrate(12)}catch(x){}}
+    var id=++seq;show(hit,cache[hit.word.toLowerCase()]||null);
+    lookup(hit.word).then(function(d){if(id===seq)show(hit,d)});
+  },480);
+},{passive:true});
+fs.addEventListener('touchmove',function(e){
+  var t=e.touches[0];if(!t)return;
+  if(Math.abs(t.clientX-lx)>10||Math.abs(t.clientY-ly)>10)lpCancel();
+},{passive:true});
+fs.addEventListener('touchend',function(e){lpCancel();if(fired){e.preventDefault();setTimeout(function(){fired=false},400)}});
+fs.addEventListener('touchcancel',lpCancel);
+fs.addEventListener('contextmenu',function(e){e.preventDefault()});
 document.addEventListener('mousedown',function(e){if(pop&&!pop.contains(e.target))close()});
 document.addEventListener('touchstart',function(e){if(pop&&!pop.contains(e.target))close()},{passive:true});
 document.addEventListener('keydown',function(e){if(e.key==='Escape')close()});
