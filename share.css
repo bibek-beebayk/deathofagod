@@ -11,3 +11,40 @@
 .totop svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
 @media (prefers-reduced-motion:reduce){.totop{transition:none}}
 @media print{.totop{display:none}}
+
+/* ---- Mobile menu ---- */
+.nt,.nb{display:none}
+@media (max-width:640px){
+  nav>span,nav>.r,nav>button:not(.nt){display:none!important}
+  nav .nt{display:inline-flex;align-items:center;gap:10px;margin-left:auto;background:none;border:1px solid var(--line);color:var(--fg);padding:9px 12px;border-radius:2px;cursor:pointer;font:inherit;letter-spacing:.14em;text-transform:uppercase}
+  nav .nb{display:inline}
+  .nt i{display:block;width:18px;height:12px;position:relative}
+  .nt i::before,.nt i::after,.nt i b{content:"";position:absolute;left:0;right:0;height:2px;background:currentColor;border-radius:1px}
+  .nt i::before{top:0}.nt i b{top:5px}.nt i::after{bottom:0}
+}
+.mm{position:fixed;inset:0;z-index:80;display:none;flex-direction:column;background:var(--bg,#0b0d10);color:var(--fg,#e6dcc4);clip-path:circle(0 at var(--cx,92%) var(--cy,36px));-webkit-clip-path:circle(0 at var(--cx,92%) var(--cy,36px));transition:clip-path .55s cubic-bezier(.7,0,.2,1),-webkit-clip-path .55s cubic-bezier(.7,0,.2,1);overflow-y:auto;overscroll-behavior:contain;padding:calc(20px + env(safe-area-inset-top,0px)) 24px calc(24px + env(safe-area-inset-bottom,0px))}
+.mm::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(120% 70% at 85% 0%,var(--glow,rgba(232,136,58,.16)),transparent 60%)}
+.mm.on{display:flex}
+.mm.open{clip-path:circle(150vmax at var(--cx,92%) var(--cy,36px));-webkit-clip-path:circle(150vmax at var(--cx,92%) var(--cy,36px))}
+.mm-top{position:relative;display:flex;justify-content:space-between;align-items:center;margin-bottom:28px}
+.mm-brand{font:500 .72rem 'IBM Plex Mono',ui-monospace,monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--acc)}
+.mm-x{width:44px;height:44px;border:1px solid var(--line);background:none;color:var(--fg);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transform:rotate(-90deg);transition:transform .5s .1s}
+.mm.open .mm-x{transform:none}
+.mm-x svg{width:18px;height:18px;stroke:currentColor;stroke-width:2;stroke-linecap:round;fill:none}
+.mm ul{position:relative;list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.mm li{border-bottom:1px solid var(--line);opacity:0;transform:translateY(18px);transition:opacity .45s,transform .45s;transition-delay:0s}
+.mm.open li{opacity:1;transform:none;transition-delay:calc(.18s + var(--i)*.055s)}
+.mm li a{display:flex;justify-content:space-between;align-items:center;padding:16px 2px;font-family:var(--display,Georgia,serif);font-weight:700;font-size:1.55rem;letter-spacing:.06em;color:var(--fg);text-decoration:none}
+.mm li a::after{content:"\2192";font-family:system-ui,sans-serif;font-weight:400;font-size:1.1rem;color:var(--acc);transition:transform .2s}
+.mm li a:active::after,.mm li a:hover::after{transform:translateX(4px)}
+.mm li a[aria-current]{color:var(--gold,var(--acc))}
+.mm-ctl{position:relative;display:flex;flex-wrap:wrap;gap:10px;margin-top:28px;opacity:0;transform:translateY(14px);transition:opacity .45s,transform .45s}
+.mm.open .mm-ctl{opacity:1;transform:none;transition-delay:calc(.2s + var(--n)*.055s)}
+.mm-ctl button{font:500 .78rem 'IBM Plex Mono',ui-monospace,monospace;letter-spacing:.14em;text-transform:uppercase;background:none;border:1px solid var(--line);color:var(--mut,var(--fg));padding:11px 16px;border-radius:2px;cursor:pointer}
+.mm-ctl button:active{color:var(--acc);border-color:var(--acc)}
+.mm-foot{position:relative;margin-top:auto;padding-top:32px;font:.72rem 'IBM Plex Mono',ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--mut,var(--fg));opacity:0;transition:opacity .6s .5s}
+.mm.open .mm-foot{opacity:1}
+body.mm-lock{overflow:hidden}
+@media (min-width:641px){.mm{display:none!important}}
+@media (prefers-reduced-motion:reduce){.mm,.mm li,.mm-ctl,.mm-x,.mm-foot{transition:none!important}.mm li,.mm-ctl,.mm-foot{opacity:1;transform:none}}
+@media print{.mm,.nt{display:none!important}}
