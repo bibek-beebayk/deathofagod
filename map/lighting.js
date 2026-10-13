@@ -70,6 +70,7 @@ export function createLighting({
     sun.intensity = t.di;
     sunDir.set(...t.dp).normalize();
     wmat.color.setHex(t.w);
+    wmat.userData.u.uSky.value.set(t.s2);
     floor.material.color.setHex(t.fl);
     state.glowK = t.gl;
     hallLight.intensity = n === "night" ? 1.4 : n === "dusk" ? 0.8 : 0.0;

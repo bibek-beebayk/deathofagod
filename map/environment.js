@@ -62,6 +62,37 @@ export function createEnvironment({ T, scene, hash } = {}) {
     normalScale: new T.Vector2(0.55, 0.55),
     depthWrite: false,
   });
+  // Fresnel sky reflection and a second, finer, counter-scrolling wave layer.
+  const wu = {
+    uT: { value: 0 },
+    uSky: { value: new T.Color(0xd5e6ea) },
+  };
+  wmat.userData.u = wu;
+  wmat.onBeforeCompile = (sh) => {
+    sh.uniforms.uT = wu.uT;
+    sh.uniforms.uSky = wu.uSky;
+    sh.fragmentShader = sh.fragmentShader
+      .replace(
+        "void main() {",
+        "uniform float uT;\nuniform vec3 uSky;\nvoid main() {",
+      )
+      .replace(
+        "#include <normal_fragment_maps>",
+        `#include <normal_fragment_maps>
+        {
+          vec3 m2 = texture2D( normalMap, vUv * 2.7 + vec2( -uT * 0.012, uT * 0.009 ) ).xyz * 2.0 - 1.0;
+          vec3 m3 = texture2D( normalMap, vUv * 0.41 + vec2( uT * 0.002, uT * 0.003 ) ).xyz * 2.0 - 1.0;
+          vec3 mm = vec3( ( m2.xy * 0.45 + m3.xy * 0.9 ) * normalScale, 1.0 );
+          normal = perturbNormal2Arb( - vViewPosition, normal, normalize( mm ), faceDirection );
+        }`,
+      )
+      .replace(
+        "gl_FragColor = vec4( outgoingLight, diffuseColor.a );",
+        `float fres = pow( 1.0 - clamp( dot( normalize( vViewPosition ), normal ), 0.0, 1.0 ), 4.0 );
+        outgoingLight = mix( outgoingLight, uSky, clamp( fres * 0.85, 0.0, 0.8 ) );
+        gl_FragColor = vec4( outgoingLight, clamp( diffuseColor.a + fres * 0.3, 0.0, 1.0 ) );`,
+      );
+  };
   const water = new T.Mesh(new T.PlaneGeometry(40000, 30000), wmat);
   water.rotation.x = -Math.PI / 2;
   scene.add(water);
@@ -116,5 +147,6 @@ export function createEnvironment({ T, scene, hash } = {}) {
   clouds.position.y = 760;
   clouds.renderOrder = 3;
   scene.add(clouds);
+  wnt.userData = { uT: wu.uT };
   return { wmat, floor, cloudT, cloudM, wnt };
 }

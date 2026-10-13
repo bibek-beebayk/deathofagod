@@ -17,6 +17,7 @@ export function createTrees({
   OY,
   world,
   D,
+  quality = { treeKeep: 1 },
 } = {}) {
   // ---- trees
   function mergeG(list) {
@@ -113,6 +114,8 @@ export function createTrees({
       id === 1 ? s * 0.55 : s,
     );
     dummy.updateMatrix();
+    // Lite tier: thin the forest after every random draw has been made.
+    if (((t * 2654435761) >>> 0) / 4294967296 >= quality.treeKeep) continue;
     if (round) {
       rounds.setMatrixAt(nr, dummy.matrix);
       rounds.setColorAt(nr++, c);

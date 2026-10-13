@@ -1,4 +1,6 @@
 // terrain: initialized by main.js; dependencies are passed explicitly.
+import { createDetailTextures } from "./detail.js";
+
 export function createTerrain({
   T,
   D,
@@ -14,6 +16,7 @@ export function createTerrain({
   vn,
   RM,
   world,
+  quality,
 } = {}) {
   // ---- terrain
   const PAL = {
@@ -191,10 +194,29 @@ export function createTerrain({
   tg.setAttribute("color", new T.BufferAttribute(clr, 3));
   tg.setIndex(new T.BufferAttribute(idx, 1));
   tg.computeVertexNormals();
-  const terrain = new T.Mesh(
-    tg,
-    new T.MeshLambertMaterial({ vertexColors: true }),
-  );
+  // Ground texture coordinates in world units, for the tiling detail maps.
+  const uv = new Float32Array(GW * GH * 2);
+  for (let n = 0; n < GW * GH; n++) {
+    uv[n * 2] = pos[n * 3];
+    uv[n * 2 + 1] = pos[n * 3 + 2];
+  }
+  tg.setAttribute("uv", new T.BufferAttribute(uv, 2));
+  const detail = createDetailTextures({ T });
+  detail.albedo.repeat.set(1 / 70, 1 / 70);
+  detail.bump.repeat.set(1 / 24, 1 / 24);
+  // Per-pixel lighting (Phong without specular) shows relief far better than
+  // the per-vertex Lambert shading it replaces.
+  const terrainMat = new T.MeshPhongMaterial({
+    vertexColors: true,
+    map: detail.albedo,
+    specular: 0x000000,
+    shininess: 0,
+  });
+  if (quality.detailBump) {
+    terrainMat.bumpMap = detail.bump;
+    terrainMat.bumpScale = 1.6;
+  }
+  const terrain = new T.Mesh(tg, terrainMat);
   terrain.receiveShadow = true;
   world.add(terrain);
   return { HALL0, zs };

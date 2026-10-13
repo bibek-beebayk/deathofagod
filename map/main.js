@@ -15,18 +15,22 @@ import { createLighting } from "./lighting.js";
 import { createControls } from "./controls.js";
 import { createLabels } from "./labels.js";
 import { startAnimation } from "./animation.js";
+import { getQuality } from "./quality.js";
 
 // Builders mutate coordinates and attach runtime metadata to a private copy.
 const D = JSON.parse(JSON.stringify({ ...terrainData, ...worldData }));
 const state = { EX: 1.4, todN: "day", glowK: 0.55, labelsOn: true };
+const quality = getQuality();
 
 const { vn, hash, rnd } = createRandom({});
 const { GW, GH, BM, CELL, H, OX, OY, VS, S0, RM, hAt, WW, WH, bAt } =
-  createHeightfield({ D, vn });
+  createHeightfield({ D, vn, up: quality.up });
 const { T, world, scene, hemi, sun, sunDir, cam, cv, R } = createScene({
   state,
+  quality,
 });
 const { HALL0, zs } = createTerrain({
+  quality,
   T,
   D,
   GW,
@@ -58,6 +62,7 @@ const { P, inOrch, sprite, ORCH, GLOW, glows } = createWorld({
   OY,
 });
 const { dummy, cc, gRound, gTrees } = createTrees({
+  quality,
   T,
   P,
   rnd,
@@ -173,6 +178,7 @@ const { labels } = createLabels({
   cam,
 });
 startAnimation({
+  quality,
   R,
   cam,
   gTowns,

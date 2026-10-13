@@ -1,7 +1,7 @@
 // heightfield: initialized by main.js; dependencies are passed explicitly.
-export function createHeightfield({ D, vn } = {}) {
+export function createHeightfield({ D, vn, up = 2 } = {}) {
   const S0 = 2.5,
-    UP = 2,
+    UP = up,
     VS = 1.9;
   const WW = 2200 * S0,
     WH = 1375 * S0,

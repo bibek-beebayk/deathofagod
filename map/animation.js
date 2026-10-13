@@ -1,5 +1,6 @@
 // animation: initialized by main.js; dependencies are passed explicitly.
 export function startAnimation({
+  quality,
   R,
   cam,
   gTowns,
@@ -49,9 +50,37 @@ export function startAnimation({
   setTod("day");
   let last = performance.now(),
     tt = 0;
+  // Adaptive quality: if frames stay over budget, first drop shadows, then
+  // step the render resolution down. It never steps back up, so it cannot flicker.
+  let slowMs = 0,
+    slowN = 0,
+    pixelRatio = R.getPixelRatio();
+  function adapt(rawMs) {
+    if (tt < 4 || document.hidden) return;
+    slowMs += rawMs;
+    if (++slowN < 45) return;
+    const avg = slowMs / slowN;
+    slowMs = slowN = 0;
+    if (avg <= quality.frameBudget) return;
+    if (R.shadowMap.enabled) {
+      R.shadowMap.enabled = false;
+      sun.castShadow = false;
+      scene.traverse((o) => {
+        if (o.material) {
+          for (const m of [].concat(o.material)) m.needsUpdate = true;
+        }
+      });
+    } else if (pixelRatio > 0.75) {
+      pixelRatio = Math.max(0.75, pixelRatio * 0.85);
+      R.setPixelRatio(pixelRatio);
+      size();
+    }
+  }
   function frame(now) {
-    const dt = Math.max(0, Math.min(0.05, (now - last) / 1000));
+    const raw = now - last;
+    const dt = Math.max(0, Math.min(0.05, raw / 1000));
     last = now;
+    adapt(raw);
     tt += dt;
     updCam(dt);
     {
@@ -80,6 +109,7 @@ export function startAnimation({
             : 0xffffff,
       );
     }
+    wnt.userData.uT.value = tt;
     wnt.offset.x = tt * 0.004;
     wnt.offset.y = tt * 0.0028;
     for (const s of glows) {
