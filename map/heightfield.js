@@ -210,10 +210,22 @@ export function createHeightfield({ D, vn, up = 2, relief = 1 } = {}) {
               1 -
               Math.abs(vn(x / 120 + 11, y / 120 + 5) * 2 - 1) *
                 (0.6 + 0.4 * vn(x / 40, y / 40));
+          const rg = (f, o) =>
+              1 - Math.abs(vn(x / f + o, y / f + o * 0.7) * 2 - 1),
+            crest = rg(70, 3) * 0.55 + rg(28, 8) * 0.3 + rg(11, 15) * 0.15;
           hb +=
             (k * 3.2 * sm(1.3, 4.5, hb) +
               hb * k * 0.9 * sm(5, 24, hb) +
-              k * 5 * sm(8, 26, hb) * ridge * ridge) *
+              k * 5 * sm(8, 26, hb) * ridge * ridge +
+              // Sharp, jagged crests: ridged noise at three scales.
+              k * 11 * sm(9, 27, hb) * crest * crest +
+              // The Anvil Hills rise as a jagged range regardless of base height.
+              (az
+                ? (relief - 1) *
+                  22 *
+                  sm(0.25, 1, ak - 0.12) *
+                  (0.25 + 0.75 * crest * crest)
+                : 0)) *
             (1 - FL[n]);
         }
         H[n] = hb > 0 ? hb * VS : hb;
