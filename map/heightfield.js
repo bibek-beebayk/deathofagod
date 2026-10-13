@@ -188,7 +188,7 @@ export function createHeightfield({ D, vn, up = 2, relief = 1 } = {}) {
             hb += (relief - 1) * 11 * Math.pow(0.45 * t + 0.55 * st, 1.15);
           }
         }
-        if (relief !== 1 && hb > 1.3 && bm & 63) {
+        if (relief !== 1 && hb > 0.3 && bm & 63) {
           // Optional dramatic relief: taller mountains, raised interiors that
           // meet the sea as cliffs, and sharper ridges. Settlement pads stay flat.
           const x = (I + 0.5) * CELL,
@@ -217,6 +217,11 @@ export function createHeightfield({ D, vn, up = 2, relief = 1 } = {}) {
             (k * 3.2 * sm(1.3, 4.5, hb) +
               hb * k * 0.9 * sm(5, 24, hb) +
               k * 5 * sm(8, 26, hb) * ridge * ridge +
+              // Coastal cliffs: stretches of coast (chosen by noise) rise sheer from the sea.
+              k *
+                12 *
+                sm(0.3, 1.2, hb) *
+                sm(0.4, 0.52, vn(x / 110 + 31, y / 110 + 17)) +
               // Sharp, jagged crests: ridged noise at three scales.
               k * 11 * sm(9, 27, hb) * crest * crest +
               // The Anvil Hills rise as a jagged range regardless of base height.

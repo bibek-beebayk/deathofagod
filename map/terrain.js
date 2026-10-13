@@ -48,6 +48,8 @@ export function createTerrain({
     ],
     HEDGE = col("#35502c"),
     GRASS = col("#6d8a44"),
+    CLIFFA = col("#8a7660"),
+    CLIFFB = col("#5f5850"),
     HEATH = col("#7f5c88"),
     HEATH2 = col("#5f4a62"),
     RUST = col("#7b4a30"),
@@ -166,6 +168,15 @@ export function createTerrain({
               : Math.max(0, (h0 - 12) / 20);
         tmp.lerp(id === 5 ? DARK : ROCK, Math.min(1, rockT));
         tmp.lerp(ROCK, Math.min(0.8, Math.max(0, sl - 0.28) * 2));
+        if (sl > 0.24 && h0 < 30) {
+          // Sea-cliff faces: layered strata in warm and grey rock.
+          const band =
+            0.5 + 0.5 * Math.sin(h * 1.7 + vn(xs * 0.3, ys * 0.3) * 6);
+          tmp.lerp(
+            band > 0.5 ? CLIFFA : CLIFFB,
+            Math.min(0.9, (sl - 0.24) * 4.5),
+          );
+        }
         if (id === 5 && sl < 0.3) {
           // Iron Country lowlands: grassy plains below the brown foothills.
           const lo = 1 - Math.max(0, Math.min(1, (h0 - 3) / 12));

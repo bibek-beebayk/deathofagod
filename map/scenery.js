@@ -24,7 +24,7 @@ export function createScenery({
   };
   // ---- sea stacks: jagged rocks standing in the shallows near the shore
   {
-    const want = quality.lite ? 260 : 700,
+    const want = quality.lite ? 340 : 1000,
       spots = [];
     for (let t = 0; t < 60000 && spots.length < want; t++) {
       const i = (r1(t, 1) * GW) | 0,
