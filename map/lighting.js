@@ -9,25 +9,23 @@ export function createLighting({
   floor,
   hallLight,
   beam,
-  R,
 } = {}) {
   // ---- time of day
   const TOD = {
     day: {
-      s1: "#263e50",
-      s2: "#789197",
-      fog: 0x6f898d,
-      hs: 0xadc6cd,
-      hg: 0x473d34,
-      hi: 0.3,
-      dc: 0xffcf88,
-      di: 1.55,
-      dp: [-760, 430, 520],
-      w: 0x174f68,
-      fl: 0x0c2d42,
+      s1: "#5d9ad0",
+      s2: "#d5e6ea",
+      fog: 0xd0e3e8,
+      hs: 0xdbe9f2,
+      hg: 0x7a6a50,
+      hi: 0.5,
+      dc: 0xffe6bd,
+      di: 0.85,
+      dp: [-760, 520, 520],
+      w: 0x2d7d98,
+      fl: 0x2a5870,
       gl: 0.55,
-      exp: 0.84,
-      sun: "rgba(255, 190, 102, .4)",
+      sun: "rgba(255, 200, 130, .3)",
       shade: ".52",
     },
     dusk: {
@@ -43,7 +41,6 @@ export function createLighting({
       w: 0x35607a,
       fl: 0x2a4660,
       gl: 1.1,
-      exp: 0.92,
       sun: "rgba(255, 137, 78, .42)",
       shade: ".46",
     },
@@ -60,7 +57,6 @@ export function createLighting({
       w: 0x12304a,
       fl: 0x0b2132,
       gl: 2.4,
-      exp: 0.7,
       sun: "rgba(111, 138, 210, .2)",
       shade: ".62",
     },
@@ -84,7 +80,6 @@ export function createLighting({
     wmat.color.setHex(t.w);
     wmat.userData.u.uSky.value.set(t.s2);
     floor.material.color.setHex(t.fl);
-    R.toneMappingExposure = t.exp;
     state.glowK = t.gl;
     hallLight.intensity = n === "night" ? 1.4 : n === "dusk" ? 0.8 : 0.0;
     beam.material.opacity = n === "night" ? 0.4 : n === "dusk" ? 0.3 : 0.18;
