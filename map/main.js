@@ -140,6 +140,7 @@ const { setTod } = createLighting({
   floor,
   hallLight,
   beam,
+  R,
 });
 const { show, flyTo, ctl, updCam, $ } = createControls({
   T,
