@@ -20,20 +20,20 @@ export function createTerrain({
 } = {}) {
   // ---- terrain
   const PAL = {
-    1: "#b4c19f",
-    2: "#dcc380",
-    3: "#c6c685",
-    4: "#a8a2bb",
-    5: "#a88462",
-    6: "#8fb25a",
-    7: "#8aa085",
+    1: "#7f8b66",
+    2: "#b99d68",
+    3: "#9aa066",
+    4: "#8b8794",
+    5: "#7d634b",
+    6: "#5f8238",
+    7: "#6f8365",
   };
   const col = (k) => new T.Color(k);
   const C = {};
   for (const k in PAL) C[k] = col(PAL[k]);
-  const FOR = col("#4b6a3c"),
-    SAND = col("#e6d9a8"),
-    ROCK = col("#8d8880"),
+  const FOR = col("#263f22"),
+    SAND = col("#d8c999"),
+    ROCK = col("#7a766e"),
     SNOW = col("#f1f3f4"),
     DARK = col("#5e4a3d"),
     RIVER = col("#6fa3c0"),
@@ -124,7 +124,7 @@ export function createTerrain({
               0.12,
               Math.min(1.9, (vn(xs * 0.02, ys * 0.02) - 0.22) * 3.2),
             );
-          tmp.lerp(FOR, Math.min(0.45, (DT[id] || 0) * pf * 0.8));
+          tmp.lerp(FOR, Math.min(0.7, (DT[id] || 0) * pf * 1.3));
         }
         const rockT =
           id === 1
@@ -167,8 +167,12 @@ export function createTerrain({
               H[Math.max(0, j - 2) * GW + i]) /
             4,
           ao = Math.max(-0.16, Math.min(0.16, (h - hn) * 0.035));
-        const v =
-          ((id === 3 ? 0.94 : 0.88) + (id === 3 ? 0.12 : 0.24) * nz) * (1 + ao);
+        const cs = vn(x * 1.9 + 3, y * 1.9) - 0.5,
+          v =
+            ((id === 3 ? 0.94 : 0.88) +
+              (id === 3 ? 0.12 : 0.24) * nz +
+              (id === 3 ? 0.05 : 0.22) * cs) *
+            (1 + ao);
         tmp.multiplyScalar(v);
         c = tmp;
       }

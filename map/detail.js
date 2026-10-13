@@ -50,7 +50,7 @@ export function createDetailTextures({ T } = {}) {
     return t;
   };
   // Albedo multiplier, centred near 0.9 so the ground colours stay as painted.
-  const albedo = make((v) => 255 * (0.74 + 0.4 * v));
+  const albedo = make((v) => 255 * (0.6 + 0.8 * v));
   // Height for the bump map.
   const bump = make((v) => 255 * v);
   return { albedo, bump };
