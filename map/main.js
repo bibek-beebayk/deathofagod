@@ -2,6 +2,7 @@ import { worldData } from "./data.js";
 import { terrainData } from "./terrain-data.js";
 import { createRandom } from "./utils.js";
 import { createHeightfield } from "./heightfield.js";
+import { createScenery } from "./scenery.js";
 import { createScene } from "./scene.js";
 import { createTerrain } from "./terrain.js";
 import { createEnvironment } from "./environment.js";
@@ -24,7 +25,7 @@ const quality = getQuality();
 
 const { vn, hash, rnd } = createRandom({});
 const { GW, GH, BM, CELL, H, OX, OY, VS, S0, RM, hAt, WW, WH, bAt } =
-  createHeightfield({ D, vn, up: quality.up });
+  createHeightfield({ D, vn, up: quality.up, relief: 2 });
 const { T, world, scene, hemi, sun, sunDir, cam, cv, R } = createScene({
   state,
   quality,
@@ -81,6 +82,7 @@ const { dummy, cc, gRound, gTrees } = createTrees({
   world,
   D,
 });
+createScenery({ T, world, hash, H, BM, GW, GH, CELL, OX, OY, VS, quality });
 const { HX, HY, HZ, gTowns, beam, hb, hr_, tents } = createSettlements({
   T,
   world,

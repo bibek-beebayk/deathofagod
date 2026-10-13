@@ -1,5 +1,5 @@
 // heightfield: initialized by main.js; dependencies are passed explicitly.
-export function createHeightfield({ D, vn, up = 2 } = {}) {
+export function createHeightfield({ D, vn, up = 2, relief = 1 } = {}) {
   const S0 = 2.5,
     UP = up,
     VS = 1.9;
@@ -159,6 +159,40 @@ export function createHeightfield({ D, vn, up = 2 } = {}) {
               q(i0, j0 + 1) * (1 - tx) * ty +
               q(i0 + 1, j0 + 1) * tx * ty;
           if (bm & 63) bm = rvf > 0.5 ? bm | 128 : bm & 127;
+        }
+        if (relief !== 1 && hb > 1.3 && bm & 63) {
+          // Aurendell rises toward the Hall in broad terraces.
+          const hp = D.places.find((q) => q.id === "hall"),
+            t =
+              1 -
+              Math.hypot((I + 0.5) * CELL - hp.x, (J + 0.5) * CELL - hp.y) /
+                330;
+          if (t > 0) {
+            const q7 = t * 6,
+              f = q7 - Math.floor(q7),
+              st = (Math.floor(q7) + f * f * (3 - 2 * f)) / 6;
+            hb += (relief - 1) * 11 * Math.pow(0.45 * t + 0.55 * st, 1.15);
+          }
+        }
+        if (relief !== 1 && hb > 1.3 && bm & 63) {
+          // Optional dramatic relief: taller mountains, raised interiors that
+          // meet the sea as cliffs, and sharper ridges. Settlement pads stay flat.
+          const x = (I + 0.5) * CELL,
+            y = (J + 0.5) * CELL,
+            k = relief - 1,
+            sm = (a, b, v) => {
+              const t = Math.max(0, Math.min(1, (v - a) / (b - a)));
+              return t * t * (3 - 2 * t);
+            },
+            ridge =
+              1 -
+              Math.abs(vn(x / 120 + 11, y / 120 + 5) * 2 - 1) *
+                (0.6 + 0.4 * vn(x / 40, y / 40));
+          hb +=
+            (k * 3.2 * sm(1.3, 4.5, hb) +
+              hb * k * 0.9 * sm(5, 24, hb) +
+              k * 5 * sm(8, 26, hb) * ridge * ridge) *
+            (1 - FL[n]);
         }
         H[n] = hb > 0 ? hb * VS : hb;
         BM[n] = bm;

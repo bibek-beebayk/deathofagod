@@ -4,9 +4,6 @@ export function createRoutes({ T, world, D, OX, OY, hAt, sprite } = {}) {
   const gRoads = new T.Group();
   world.add(gRoads);
   {
-    const pos = [],
-      idx = [];
-    let n = 0;
     const cu = (pts) =>
       new T.CatmullRomCurve3(
         pts.map((p) => new T.Vector3(p[0], 0, p[1])),
@@ -14,50 +11,57 @@ export function createRoutes({ T, world, D, OX, OY, hAt, sprite } = {}) {
         "catmullrom",
         0.4,
       );
-    for (const R of D.ironRoads) {
-      const c = cu(R.pts.map((p) => [p[0] - OX, p[1] - OY])),
-        len = c.getLength(),
-        N = Math.max(8, Math.round(len / 4)),
-        w = R.main ? 1.5 : 1.0;
-      let prev = null;
-      for (let i = 0; i <= N; i++) {
-        const u = c.getPointAt(i / N),
-          t = c.getTangentAt(i / N),
-          nx = -t.z * w,
-          nz = t.x * w;
-        const y = (x) =>
-          Math.max(hAt(u.x + OX + x[0], u.z + OY + x[1]), 0.25) + 0.5;
-        pos.push(
-          u.x + nx,
-          y([nx, nz]),
-          u.z + nz,
-          u.x - nx,
-          y([-nx, -nz]),
-          u.z - nz,
-        );
-        if (i > 0) {
-          const a = n - 2;
-          idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2);
+    // Two ribbons per road: a dark worn verge underneath and a pale packed surface on top.
+    const ribbon = (wk, lift, color, order) => {
+      const pos = [],
+        idx = [];
+      let n = 0;
+      for (const R of D.ironRoads) {
+        const c = cu(R.pts.map((p) => [p[0] - OX, p[1] - OY])),
+          len = c.getLength(),
+          N = Math.max(8, Math.round(len / 4)),
+          w = (R.main ? 2.2 : 1.5) * wk;
+        for (let i = 0; i <= N; i++) {
+          const u = c.getPointAt(i / N),
+            t = c.getTangentAt(i / N),
+            nx = -t.z * w,
+            nz = t.x * w;
+          const y = (x) =>
+            Math.max(hAt(u.x + OX + x[0], u.z + OY + x[1]), 0.25) + lift;
+          pos.push(
+            u.x + nx,
+            y([nx, nz]),
+            u.z + nz,
+            u.x - nx,
+            y([-nx, -nz]),
+            u.z - nz,
+          );
+          if (i > 0) {
+            const a = n - 2;
+            idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2);
+          }
+          n += 2;
         }
-        n += 2;
       }
-    }
-    const g = new T.BufferGeometry();
-    g.setAttribute("position", new T.Float32BufferAttribute(pos, 3));
-    g.setIndex(idx);
-    g.computeVertexNormals();
-    gRoads.add(
-      new T.Mesh(
-        g,
-        new T.MeshLambertMaterial({
-          color: 0xd9c690,
-          side: T.DoubleSide,
-          polygonOffset: true,
-          polygonOffsetFactor: -2,
-          polygonOffsetUnits: -2,
-        }),
-      ),
-    );
+      const g = new T.BufferGeometry();
+      g.setAttribute("position", new T.Float32BufferAttribute(pos, 3));
+      g.setIndex(idx);
+      g.computeVertexNormals();
+      gRoads.add(
+        new T.Mesh(
+          g,
+          new T.MeshLambertMaterial({
+            color,
+            side: T.DoubleSide,
+            polygonOffset: true,
+            polygonOffsetFactor: order,
+            polygonOffsetUnits: order,
+          }),
+        ),
+      );
+    };
+    ribbon(1.7, 0.4, 0x7d6c4c, -1);
+    ribbon(1, 0.55, 0xdcc994, -3);
   }
   // ---- route & lanes
   const gRoute = new T.Group(),
