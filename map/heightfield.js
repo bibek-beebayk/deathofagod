@@ -161,6 +161,20 @@ export function createHeightfield({ D, vn, up = 2, relief = 1 } = {}) {
           if (bm & 63) bm = rvf > 0.5 ? bm | 128 : bm & 127;
         }
         if (relief !== 1 && hb > 1.3 && bm & 63) {
+          // Open-cast mines at Redseam and Coalgate: stepped pits with spoil rims.
+          for (const id of ["redseam", "coalgate"]) {
+            const mp = D.places.find((q) => q.id === id),
+              R = 34,
+              d = Math.hypot((I + 0.5) * CELL - mp.x, (J + 0.5) * CELL - mp.y);
+            if (d < R) {
+              const t = 1 - d / R,
+                q5 = t * 5,
+                f = q5 - Math.floor(q5);
+              hb -= 6.5 * ((Math.floor(q5) + f * f * (3 - 2 * f)) / 5);
+            } else if (d < R + 7) hb += 1.2 * (1 - (d - R) / 7);
+          }
+        }
+        if (relief !== 1 && hb > 1.3 && bm & 63) {
           // Aurendell rises toward the Hall in broad terraces.
           const hp = D.places.find((q) => q.id === "hall"),
             t =
@@ -179,7 +193,15 @@ export function createHeightfield({ D, vn, up = 2, relief = 1 } = {}) {
           // meet the sea as cliffs, and sharper ridges. Settlement pads stay flat.
           const x = (I + 0.5) * CELL,
             y = (J + 0.5) * CELL,
-            k = relief - 1,
+            id = bm & 63,
+            // The Iron Country keeps its mountains in the Anvil Hills; the rest stays low.
+            az = id === 5 ? D.zones.find((q) => q.n === "anvil") : null,
+            ak = az
+              ? 0.12 +
+                0.9 *
+                  Math.max(0, 1 - Math.hypot(x - az.x, y - az.y) / (az.r * 1.6))
+              : 1,
+            k = (relief - 1) * ak,
             sm = (a, b, v) => {
               const t = Math.max(0, Math.min(1, (v - a) / (b - a)));
               return t * t * (3 - 2 * t);

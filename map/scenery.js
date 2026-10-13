@@ -81,19 +81,19 @@ export function createScenery({
     g.fillStyle = gr;
     g.fillRect(0, 0, 128, 128);
     const tex = new T.CanvasTexture(c);
-    const want = quality.lite ? 26 : 70;
+    const want = quality.lite ? 8 : 22;
     let got = 0;
     for (let t = 0; t < 40000 && got < want; t++) {
       const i = (r1(t, 21) * GW) | 0,
         j = (r1(t, 22) * GH) | 0,
         h = H[j * GW + i] / VS;
-      if (!(BM[j * GW + i] & 63) || h < 9) continue;
+      if (!(BM[j * GW + i] & 63) || h < 16) continue;
       for (let k = 0; k < 3; k++) {
         const sp = new T.Sprite(
           new T.SpriteMaterial({
             map: tex,
             transparent: true,
-            opacity: 0.2 + r1(t, 23 + k) * 0.22,
+            opacity: 0.1 + r1(t, 23 + k) * 0.14,
             depthWrite: false,
             fog: false,
           }),
@@ -104,7 +104,7 @@ export function createScenery({
           H[j * GW + i] * 0.75 + 5 + r1(t, 50 + k) * 20,
           (j + 0.5) * CELL - OY + (r1(t, 60 + k) - 0.5) * 120,
         );
-        sp.scale.set(sz, sz * 0.45, 1);
+        sp.scale.set(sz, sz * 0.7, 1);
         sp.renderOrder = 2;
         gScenery.add(sp);
       }

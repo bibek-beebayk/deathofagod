@@ -40,6 +40,25 @@ export function createTerrain({
     SALT = col("#f1ede0"),
     SHAL = col("#74cdc4"),
     FOAM = col("#f4f8f6");
+  const FIELD = [
+      col("#d2b24e"),
+      col("#e0cd7a"),
+      col("#86a047"),
+      col("#8a6a3c"),
+    ],
+    HEDGE = col("#35502c"),
+    GRASS = col("#6d8a44"),
+    HEATH = col("#7f5c88"),
+    HEATH2 = col("#5f4a62"),
+    RUST = col("#7b4a30"),
+    CHAR = col("#3f3733"),
+    SCREE = col("#2f2c2a"),
+    PAN1 = col("#eef0ea"),
+    PAN2 = col("#c9dde2"),
+    PANEDGE = col("#9d9580"),
+    SPOIL = col("#5a4a3d"),
+    PITR = [col("#9a3326"), col("#b84a30"), col("#6a2822")],
+    PITC = [col("#1d1d1f"), col("#2e2d30"), col("#121214")];
   const HALL0 = D.places.find((p) => p.id === "hall");
   const MARB = col("#f0e7cc"),
     TRD = col("#b5c78a"),
@@ -118,6 +137,19 @@ export function createTerrain({
             tmp.lerp(z.c, Math.min(1, (1 - d / z.r) * 2.2) * 0.85);
           }
         }
+        for (const id of ["redseam", "coalgate"]) {
+          const mp = D.places.find((q) => q.id === id),
+            d = Math.hypot(x - mp.x, y - mp.y);
+          if (d < 41) {
+            const t = 1 - d / 34;
+            if (t < 0) tmp.lerp(SPOIL, 0.8 * (1 - (d - 34) / 7));
+            else {
+              const b = Math.floor(t * 5) % 3,
+                pal = id === "redseam" ? PITR : PITC;
+              tmp.copy(pal[b]);
+            }
+          }
+        }
         {
           const DT = { 1: 0.07, 3: 0.1, 4: 0.16, 5: 0.2, 6: 0.5, 7: 0.22 },
             pf = Math.max(
@@ -130,10 +162,56 @@ export function createTerrain({
           id === 1
             ? Math.max(0, (h0 - 14) / 12)
             : id === 5
-              ? Math.max(0, (h0 - 9) / 14)
+              ? Math.max(0, (h0 - 24) / 16)
               : Math.max(0, (h0 - 12) / 20);
         tmp.lerp(id === 5 ? DARK : ROCK, Math.min(1, rockT));
         tmp.lerp(ROCK, Math.min(0.8, Math.max(0, sl - 0.28) * 2));
+        if (id === 5 && sl < 0.3) {
+          // Iron Country lowlands: grassy plains below the brown foothills.
+          const lo = 1 - Math.max(0, Math.min(1, (h0 - 3) / 12));
+          tmp.lerp(GRASS, lo * (0.35 + 0.45 * vn(xs * 0.05 + 2, ys * 0.05)));
+        }
+        for (const z of zs) {
+          const d = Math.hypot(x - z.x, y - z.y);
+          if (d >= z.r) continue;
+          const w = Math.min(1, (1 - d / z.r) * 3),
+            hh = h0;
+          if (z.k === "farm" && !(bm & 128) && hh > 1) {
+            // Patchwork of hedged fields, each with its own crop colour.
+            const u = (x * 0.94 + y * 0.34) / 15,
+              v = (-x * 0.34 + y * 0.94) / 15,
+              ci = Math.floor(u),
+              cj = Math.floor(v),
+              k = vn(ci * 13, cj * 17),
+              e = Math.min(u - ci, 1 + ci - u, v - cj, 1 + cj - v);
+            tmp.lerp(
+              k < 0.25
+                ? FIELD[0]
+                : k < 0.5
+                  ? FIELD[1]
+                  : k < 0.72
+                    ? FIELD[2]
+                    : FIELD[3],
+              0.85 * w,
+            );
+            if (e < 0.06) tmp.lerp(HEDGE, 0.75 * w);
+            else tmp.multiplyScalar(1 + 0.08 * Math.sin(v * 70 + k * 9) * w);
+          } else if (z.k === "moor") {
+            tmp.lerp(vn(xs * 0.3, ys * 0.3) > 0.5 ? HEATH : HEATH2, 0.8 * w);
+          } else if (z.k === "hills") {
+            const r2 = vn(xs * 0.15 + 5, ys * 0.15);
+            tmp.lerp(r2 > 0.5 ? RUST : CHAR, 0.8 * w);
+            if (sl > 0.14) tmp.lerp(SCREE, Math.min(0.7, (sl - 0.14) * 3) * w);
+          } else if (z.k === "salt" && hh < 2.2 && !(bm & 128)) {
+            const u = x / 7,
+              v = y / 5,
+              ci = Math.floor(u),
+              cj = Math.floor(v);
+            const e = Math.min(u - ci, 1 + ci - u, v - cj, 1 + cj - v);
+            tmp.lerp(vn(ci * 5, cj * 3) > 0.5 ? PAN1 : PAN2, 0.9 * w);
+            if (e < 0.09) tmp.lerp(PANEDGE, 0.8 * w);
+          }
+        }
         if (id === 1 && h0 > 29) tmp.lerp(SNOW, Math.min(1, (h0 - 29) / 5));
         if (h0 < 1.15)
           tmp.lerp(
@@ -220,6 +298,123 @@ export function createTerrain({
     terrainMat.bumpMap = detail.bump;
     terrainMat.bumpScale = 1.6;
   }
+
+  function paintOverlay() {
+    const TW = quality.lite ? 2048 : 4096,
+      TH = TW / 2,
+      WWd = OX * 2,
+      WHd = OY * 2,
+      cv = document.createElement("canvas");
+    cv.width = TW;
+    cv.height = TH;
+    const g = cv.getContext("2d"),
+      px = (c) => [(c.r * 255) | 0, (c.g * 255) | 0, (c.b * 255) | 0];
+    const box = (cx, cy, r, fn) => {
+      const x0 = Math.max(0, Math.floor(((cx - r) / WWd) * TW)),
+        x1 = Math.min(TW, Math.ceil(((cx + r) / WWd) * TW)),
+        y0 = Math.max(0, Math.floor(((cy - r) / WHd) * TH)),
+        y1 = Math.min(TH, Math.ceil(((cy + r) / WHd) * TH));
+      const im = g.createImageData(x1 - x0, y1 - y0);
+      for (let ty = y0; ty < y1; ty++)
+        for (let tx = x0; tx < x1; tx++) {
+          const x = ((tx + 0.5) / TW) * WWd,
+            y = ((ty + 0.5) / TH) * WHd,
+            gi = Math.max(0, Math.min(GW - 1, (x / CELL) | 0)),
+            gj = Math.max(0, Math.min(GH - 1, (y / CELL) | 0)),
+            bm = BM[gj * GW + gi],
+            o = ((ty - y0) * (x1 - x0) + (tx - x0)) * 4,
+            r = fn(x, y, bm, H[gj * GW + gi] / VS);
+          if (r) {
+            im.data[o] = r[0];
+            im.data[o + 1] = r[1];
+            im.data[o + 2] = r[2];
+            im.data[o + 3] = r[3];
+          }
+        }
+      g.putImageData(im, x0, y0);
+    };
+    for (const z of zs) {
+      if (z.k === "farm")
+        box(z.x, z.y, z.r, (x, y, bm, h0) => {
+          const d = Math.hypot(x - z.x, y - z.y);
+          if (d >= z.r || !(bm & 63) || bm & 128 || h0 < 1) return null;
+          const u = (x * 0.94 + y * 0.34) / 15,
+            v = (-x * 0.34 + y * 0.94) / 15,
+            ci = Math.floor(u),
+            cj = Math.floor(v),
+            k = vn(ci * 13, cj * 17),
+            e = Math.min(u - ci, 1 + ci - u, v - cj, 1 + cj - v),
+            a = Math.min(1, (1 - d / z.r) * 2.2) * 0.95;
+          if (e < 0.07) return [...px(HEDGE), a * 255];
+          const c = px(
+              k < 0.25
+                ? FIELD[0]
+                : k < 0.5
+                  ? FIELD[1]
+                  : k < 0.72
+                    ? FIELD[2]
+                    : FIELD[3],
+            ),
+            f = 1 + 0.07 * Math.sin(v * 90 + k * 9);
+          return [c[0] * f, c[1] * f, c[2] * f, a * 255];
+        });
+      else if (z.k === "salt")
+        box(z.x, z.y, z.r, (x, y, bm, h0) => {
+          const d = Math.hypot(x - z.x, y - z.y);
+          if (d >= z.r || !(bm & 63) || bm & 128 || h0 > 2.2) return null;
+          const u = x / 7,
+            v = y / 5,
+            ci = Math.floor(u),
+            cj = Math.floor(v),
+            e = Math.min(u - ci, 1 + ci - u, v - cj, 1 + cj - v),
+            a = Math.min(1, (1 - d / z.r) * 4) * 0.95;
+          return [
+            ...px(e < 0.09 ? PANEDGE : vn(ci * 5, cj * 3) > 0.5 ? PAN1 : PAN2),
+            a * 255,
+          ];
+        });
+    }
+    for (const id of ["redseam", "coalgate"]) {
+      const mp = D.places.find((q) => q.id === id),
+        pal = id === "redseam" ? PITR : PITC;
+      box(mp.x, mp.y, 42, (x, y) => {
+        const d = Math.hypot(x - mp.x, y - mp.y);
+        if (d > 41) return null;
+        const t = 1 - d / 34;
+        if (t < 0) return [...px(SPOIL), 255 * 0.8 * (1 - (d - 34) / 7)];
+        const q5 = t * 5,
+          b = Math.floor(q5) % 3,
+          edge = q5 - Math.floor(q5) < 0.08 ? 0.75 : 1,
+          c = px(pal[b]);
+        return [c[0] * edge, c[1] * edge, c[2] * edge, 255];
+      });
+    }
+    const tex = new T.CanvasTexture(cv);
+    tex.flipY = false;
+    tex.anisotropy = 4;
+    return tex;
+  }
+  // Fine ground features (hedged fields, salt pans, mine terraces) are painted into
+  // an overlay texture so they stay crisp however coarse the terrain mesh is.
+  const ov = paintOverlay();
+  terrainMat.onBeforeCompile = (sh) => {
+    sh.uniforms.uOv = { value: ov };
+    sh.uniforms.uWorld = { value: new T.Vector4(OX, OY, OX * 2, OY * 2) };
+    sh.vertexShader = sh.vertexShader
+      .replace("#include <common>", "#include <common>\nvarying vec2 vOvXY;")
+      .replace("#include <uv_vertex>", "#include <uv_vertex>\nvOvXY = uv;");
+    sh.fragmentShader = sh.fragmentShader
+      .replace(
+        "#include <common>",
+        "#include <common>\nvarying vec2 vOvXY;\nuniform sampler2D uOv;\nuniform vec4 uWorld;",
+      )
+      .replace(
+        "#include <color_fragment>",
+        `#include <color_fragment>
+        vec4 ovc = texture2D(uOv, (vOvXY + uWorld.xy) / uWorld.zw);
+        diffuseColor.rgb = mix(diffuseColor.rgb, ovc.rgb * (0.8 + 0.35 * texelColor.r), ovc.a);`,
+      );
+  };
   const terrain = new T.Mesh(tg, terrainMat);
   terrain.receiveShadow = true;
   world.add(terrain);
