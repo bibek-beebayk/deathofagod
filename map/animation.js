@@ -1,5 +1,6 @@
 // animation: initialized by main.js; dependencies are passed explicitly.
 export function startAnimation({
+  forges,
   quality,
   R,
   cam,
@@ -110,6 +111,7 @@ export function startAnimation({
       );
     }
     wnt.userData.uT.value = tt;
+    forges.update(tt, state.todN, R);
     wnt.offset.x = tt * 0.004;
     wnt.offset.y = tt * 0.0028;
     for (const s of glows) {

@@ -3,6 +3,7 @@ import { terrainData } from "./terrain-data.js";
 import { createRandom } from "./utils.js";
 import { createHeightfield } from "./heightfield.js";
 import { createScenery } from "./scenery.js";
+import { createForges } from "./forges.js";
 import { createScene } from "./scene.js";
 import { createTerrain } from "./terrain.js";
 import { createEnvironment } from "./environment.js";
@@ -83,6 +84,7 @@ const { dummy, cc, gRound, gTrees } = createTrees({
   D,
 });
 createScenery({ T, world, hash, H, BM, GW, GH, CELL, OX, OY, VS, quality });
+const forges = createForges({ T, world, D, hash, hAt, OX, OY, zs, quality });
 const { HX, HY, HZ, gTowns, beam, hb, hr_, tents } = createSettlements({
   T,
   world,
@@ -180,6 +182,7 @@ const { labels } = createLabels({
   cam,
 });
 startAnimation({
+  forges,
   quality,
   R,
   cam,
