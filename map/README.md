@@ -30,6 +30,8 @@ Serve the repository over HTTP when previewing locally (ES modules do not work r
 | `quality.js`      | Picks the "high" or "lite" (phone) render tier; `?q=lite` / `?q=high` forces one |
 | `detail.js`       | Tileable noise textures for fine ground texture and relief                       |
 | `scenery.js`      | Sea stacks along the coasts and mist banks on the highlands                      |
+| `forges.js`       | Chimney smoke, furnace glow and lit mine adits (Iron Country)                    |
+| `docks.js`        | Cinderwick ore-wharves: piers, cranes, ore stacks and moored ships               |
 | `about.js`        | About panel toggle                                                               |
 | `main.js`         | Initialization order and explicit connections between modules                    |
 
